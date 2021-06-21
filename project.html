@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Chinese map</title>
+		<script src="d3.js"></script>
+		<script type="text/javascript" src="Legend.js?version=<?php echo date('YmdHi'); ?>"></script>
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="
+		style.css">
+	</head>
+	<body>
+			<div id = "mainTitle">
+				<text>
+					2013-2019年高等教育省市发展探索与分析
+				</text>
+			</div>
+			<div id = "myMap" class = "myMap" >
+				<div class = "vert">
+					<text class = "subTitle"> 中国2019年高等学校(机构)毕业研究生(总数)省市地域分布图</text>
+				</div>
+
+				<div class="form-group">
+					<text style="font-size: 10px;"> 学生类型 </text>
+					<label class="radio-inline" style="font-size: 10px;">
+			            <input type="radio" name="type0" id = "type0" value="Postgraduate" onclick = "Vis.radioTran(0, Vis.attr, Vis.year, 1)" checked="checked"> 高校（机构）毕业研究生
+			        </label>
+			        <label class="radio-inline" style="font-size: 10px;">
+			            <input type="radio" name="type1" id = "type1" value="Regular" onclick = "Vis.radioTran(1, Vis.attr, Vis.year, 1)"> 普通本专科毕业学生
+			        </label>
+
+			        <label class="radio-inline" style="font-size: 10px;">
+			            <input type="radio" name="type2" id = "type2" value="Adult" onclick = "Vis.radioTran(2, Vis.attr, Vis.year, 1)"> 成人本专科毕业学生
+			        </label>
+
+			        <label class="radio-inline" style="font-size: 10px;">
+			            <input type="radio" name="type3" id = "type3" value="Web-based" onclick = "Vis.radioTran(3, Vis.attr, Vis.year, 1)"> 网络本专科毕业学生
+			        </label>
+				</div>
+
+				<div class="form-group">
+					<text style="font-size: 10px;"> 可选属性 </text>
+					<label class="radio-inline" style="font-size: 10px;">
+			            <input type="radio" name="attr0" id = "attr0" value="all" onclick = "Vis.radioTran(Vis.stuType, 0, Vis.year, 2)" checked="checked"> 总数
+			        </label>
+
+			        <label class="radio-inline" style="font-size: 10px;">
+			            <input type="radio" name="attr1" id = "attr1" value="female" onclick = "Vis.radioTran(Vis.stuType, 1, Vis.year, 2)"> 女性
+			        </label>
+
+			        <label class="radio-inline" style="font-size: 10px;">
+			            <input type="radio" name="attr2" id = "attr2" value="male" onclick = "Vis.radioTran(Vis.stuType, 2, Vis.year, 2)"> 男性
+			        </label>
+
+			        <label class="radio-inline" style="font-size: 10px;">
+			            <input type="radio" name="attr3" id = "attr3" value="high" onclick = "Vis.radioTran(Vis.stuType, 3, Vis.year, 2)"> 本科/博士
+			        </label>
+
+					<label class="radio-inline" style="font-size: 10px;">
+			            <input type="radio" name="attr4" id = "attr4" value="low" onclick = "Vis.radioTran(Vis.stuType, 4, Vis.year, 2)"> 专科/硕士
+			        </label>
+
+			        <label class="radio-inline" style="font-size: 10px;">
+			            <input type="radio" name="attr5" id = "attr5" value="sex_ratio" onclick = "Vis.radioTran(Vis.stuType, 5, Vis.year, 2)"> 男女比例(男性/女性)
+			        </label>
+
+			        <label class="radio-inline" style="font-size: 10px;">
+			            <input type="radio" name="attr6" id = "attr6" value="type_ratio" onclick = "Vis.radioTran(Vis.stuType, 6, Vis.year, 2)"> 本科/专科(博士/硕士)
+			        </label>
+				</div>
+
+				<div class="slidecontainer">
+					<text style="font-size: 10px;"> 年份拖条 </text>
+					<input type="range" min="2013" max="2019" value="2019" class="slider" id="myRange" step = "1">
+					<label for="myRange">2019</label>
+				</div>
+
+				<div>
+					<button id="reset" class = "map">复原地图</button>
+				</div>
+
+				<div id = "mappy" class = "mappy">
+				</div>
+				<div class = "clusterTitle">
+					<text class = "subTitle"> 中国高等学校(机构)毕业研究生(总数)时序聚类平行坐标轴图</text>
+				</div>
+				<div id = "cluster">
+				</div>
+				<div class="cluster-form-group">
+					<text style="font-size: 10px;"> 地图颜色编码 </text>
+					<label class="radio-inline" style="font-size: 10px;">
+			            <input type="radio" name="code0" id = "code0" value="non-cluster" onclick = "Vis.clusterTran(0)" checked="checked"> 非聚类颜色编码
+			        </label>
+			        <label class="radio-inline" style="font-size: 10px;">
+			            <input type="radio" name="code1" id = "code1" value="cluster" onclick = "Vis.clusterTran(1)"> 聚类颜色编码
+			        </label>
+			</div>
+		</div>
+
+		<div id = "detail" class = "detail" style="vertical-align: top;">
+			<div id = "view4-title" class = "view4-title">
+					<text class = "subTitle" x = 0> 2019年 高等教育不同类别总数(双对数坐标) 散点图矩阵高级探索</text>
+				</div>
+			<div id = "view4-matrix">
+			</div>
+			<div id = "selected-provinces">
+				<text></text>
+			</div>
+			<div class = "view2" >
+					<text class = "subTitle"> 北京高校(机构)毕业研究生各项指标发展趋势图</text>
+			</div>
+			<div id = "view2-description">
+			</div>
+		</div>
+
+
+		<script>
+			//初始化
+			var Vis = {};
+			// View 1
+			Vis.formatAsThousands = d3.format(",");
+			Vis.formatInt = d3.format("");
+			Vis.width = 600;
+			Vis.height = 320;
+			Vis.Singleyear = 2019;
+			Vis.stuType = 0;
+			Vis.attrType = ["all","female","male","high","low","sex_ratio","type_ratio"];
+			Vis.attrTypeName = ["总数 总数","女生 女生","男生 男生","本科 博士","专科 硕士","性别比例 性别比例","本专比例 硕博比例"]
+			Vis.attrTypeName2 = ["总数(双对数坐标)","女生总数(双对数坐标)","男生总数(双对数坐标)","本科/博士总数(双对数坐标)","专科/硕士总数(双对数坐标)","性别比例","本专/硕博比例"]
+			Vis.titleName = ["高校（机构）毕业研究生","普通本专科毕业学生","成人本专科毕业学生","网络本专科毕业学生"]
+			Vis.attr = 0;
+			Vis.clus = 0;
+
+			Vis.projection = d3.geoMercator()
+		        .center([107, 37])
+		        .scale(400)
+		        .translate([Vis.width / 2, Vis.height / 2]);
+			Vis.path = d3.geoPath()
+		        .projection(Vis.projection);
+
+			Vis.svg = d3.select("#mappy")
+						.append("svg")
+						.attr("class", "map")
+						.attr("width", Vis.width)
+						.attr("height", Vis.height);
+			d3.select("#mappy")
+						.append("svg")
+						.attr("class", "legend")
+						.attr("width", Vis.width)
+						.attr("height", 40);
+			//filtering functions
+			Vis.filtering = function(year, type){
+				return Vis.education.filter(d => (d.year == year) && (d.type == type) && (d.province != "总计"));
+			}
+
+			Vis.filtering2 = function(type){
+				return Vis.education.filter(d => (d.type == type) && 
+					(d.province != "总计"));
+			}
+
+			Vis.filtering3 = function(type, province){
+				return Vis.education.filter(d => (d.type == type) && (d.province == province));
+			}
+			Vis.cluster = {};
+			Vis.cluster.filtering = function(type){
+				return Vis.clusteringData.filter(d => (d.type == type));
+			}
+
+			Vis.unique = function(arr){
+				return Array.from(new Set(arr));
+			}
+
+			Vis.mapToObject = function(m) {
+		      let lo = {};
+		      for(let[k,v] of m) {
+		          if(v instanceof Map) {
+		              lo[k] = Vis.mapToObject(v);
+		          }
+		          else {
+		              lo[k] = v;
+		          }
+		      }
+		      return lo;
+		    };
+			// Slider
+			Vis.slider = document.getElementById("myRange");
+
+			Vis.slider.oninput = function() {
+			  d3.select(".slidecontainer").select("label").html(Vis.slider.value);
+			  Vis.radioTran(Vis.stuType, Vis.attr, Vis.slider.value, 3)
+			}
+
+			Vis.radioTran = function(type = 0, attr = 0, year = 2019, sty = 1){
+				Vis.clearBrush();
+				//设置按钮的选中与否
+				if (sty == 1){
+					for (var i = 0; i < 4; i++){
+						$("#type" + i).removeAttr("checked");
+					}
+					 $("#type" + type).attr("checked", "checked");
+					//更新type
+					Vis.stuType = type;
+				}
+				else if (sty == 2){
+					for (var i = 0; i < 7; i++){
+						$("#attr" + i).removeAttr("checked");
+					}
+					$("#attr" + attr).attr("checked", "checked");
+					Vis.attr = attr;
+				}
+				else
+					Vis.Singleyear = year;
+
+				// 数据的定义与比例尺的更新
+				_tmpData = Vis.filtering(Vis.Singleyear, Vis.eduType[Vis.stuType]);
+				_allData = Vis.filtering2(Vis.eduType[Vis.stuType])
+		        _values = [];
+		        for(var i = 0; i < _tmpData.length; i++) {
+		            _values[_tmpData[i].province] = _tmpData[i];
+		        }
+
+		        // Color scale
+		        _maxvalue = d3.max(_allData, function(d) {
+		            return d[Vis.attrType[Vis.attr]];
+		        });
+		        _minvalue = d3.min(_allData, function(d) {
+		            return d[Vis.attrType[Vis.attr]];
+		        });
+		        Vis.mapScale.domain([_minvalue, _maxvalue]);
+		        Vis.colorScale.domain(Vis.mapScale.domain().reverse())
+		       	Vis.legendMap.remove();
+		       	Vis.legendMap = legend({
+					  color: Vis.colorScale,
+					  title: "地图颜色编码",
+					  translateX: Vis.width - 10,
+					  translateY: 45,
+					  width: 320
+					});
+
+
+		        //颜色的更新
+		        Vis.boundaryPath.transition()
+		        .attr("fill", function(d, i) {
+		        	if (Vis.differentProv.indexOf(d.properties.abb) < 0)
+		        		return "#ccc"
+				    return Vis.colorScale(_values[d.properties.abb][Vis.attrType[Vis.attr]]);
+					})
+
+		        //添加tooltip
+		        Vis.boundaryPath.selectAll("title")
+		        	.transition()
+		        	.text(function(d) {
+		        		if (Vis.differentProv.indexOf(d.properties.abb) >= 0)
+							return d.properties.abb + "：" + Vis.formatAsThousands(_values[d.properties.abb][Vis.attrType[Vis.attr]]);
+				   });
+		      	Vis.boundaryText.selectAll("title")	
+		      		.transition()
+		        	.text(function(d) {
+		        		if (Vis.differentProv.indexOf(d.properties.abb) >= 0)
+							return d.properties.abb + ":" + Vis.formatAsThousands(_values[d.properties.abb][Vis.attrType[Vis.attr]]);
+				   });
+		        d3.select(".subTitle").transition()
+		        	.text( 
+		        		Vis.stuType == 0? "中国" + Vis.Singleyear + "年" + Vis.eduTypeName[Vis.stuType] + "(" + Vis.attrTypeName[Vis.attr].split(/\s+/)[1] + ")省市地域分布图": "中国" + Vis.Singleyear + "年" + Vis.eduTypeName[Vis.stuType] + "(" + Vis.attrTypeName[Vis.attr].split(/\s+/)[0] + ")省市地域分布图"
+		        		)
+		        if (sty == 1){
+		        	Vis.view2Transition("北京");
+		        }
+
+		        // View 3 changes
+
+		        Vis.cluster.dataToUse = Vis.cluster.filtering(Vis.eduType[Vis.stuType]);
+		        Vis.cluster.data = Vis.mapToObject(d3.group(Vis.cluster.dataToUse, d => d.province));
+		        Vis.cluster.summaryData = Vis.filtering2(Vis.eduType[Vis.stuType]);
+		       //svg join的Data
+		        Vis.cluster.plotData = Vis.mapToObject(d3.group(Vis.cluster.summaryData, d => d.province, d=>d.year));
+		        Vis.cluster.finalData = new Array();
+		        for (var key in Vis.cluster.plotData) {
+				　　var cluster = Vis.cluster.data[key][0][Vis.attrType[Vis.attr]];
+				　　Vis.cluster.plotData[key][Vis.attrType[Vis.attr]] = cluster;
+				  Vis.cluster.plotData[key]["province"] = key;
+				  Vis.cluster.finalData.push(Vis.cluster.plotData[key]);
+				}
+		        Vis.cluster.y = {}
+
+				for (var i in Vis.cluster.dimensions) {
+					_name = Vis.cluster.dimensions[i]
+					Vis.cluster.y[_name] = d3.scaleLinear()
+						.domain([d3.min(Vis.cluster.summaryData, d => d[Vis.attrType[Vis.attr]]),
+						d3.max(Vis.cluster.summaryData, d => d[Vis.attrType[Vis.attr]])])
+				  		.range([Vis.cluster.height, 0])
+				}
+				//Update axis
+				Vis.view3
+					.selectAll("g.axis")
+					.transition()
+					.each(function(d) { d3.select(this).call(d3.axisLeft().ticks(5).scale(Vis.cluster.y[d])); });
+				//Update path lines
+				Vis.view3
+					.selectAll("path")
+					.data(Vis.cluster.finalData)
+					.transition()
+					  .attr("d",  Vis.cluster.path)
+					  .attr("class", function (d) { return "line " + "classes" + d[Vis.attrType[Vis.attr]]; } ) 
+					  .style("stroke", function(d){ return Vis.cluster.color(d[Vis.attrType[Vis.attr]]);} );
+				Vis.clusterTran(0);
+				d3.select(".clusterTitle").select("text").transition()
+		        	.text( 
+		        		Vis.stuType == 0? "中国" + Vis.eduTypeName[Vis.stuType] + "(" + Vis.attrTypeName[Vis.attr].split(/\s+/)[1] + ")时序聚类平行坐标轴图": "中国" + Vis.eduTypeName[Vis.stuType] + "(" + Vis.attrTypeName[Vis.attr].split(/\s+/)[0] + ")时序聚类平行坐标轴图"
+		        		)
+		        Vis.scatterTran(Vis.Singleyear, Vis.attr);
+		        d3.select(".view4-title").select("text").transition()
+		        	.text( 
+		        			Vis.Singleyear + "年 " + "高等教育不同类别" + Vis.attrTypeName2[Vis.attr] + " 散点图矩阵高级探索"
+		        		)
+		    }
+
+		    Vis.clusterTran = function(cls){
+		    	Vis.clus = cls;
+				//设置按钮的选中与否
+				for (var i = 0; i < 2; i++){
+					$("#code" + i).removeAttr("checked");
+				}
+				 $("#code" + cls).attr("checked", "checked");
+				//更新type
+				Vis.clus = cls;
+				if (Vis.clus == 0){
+					Vis.legendMap.remove();
+		       		Vis.legendMap = legend({
+					  color: Vis.colorScale,
+					  title: "地图颜色编码",
+					  translateX: Vis.width - 10,
+					  translateY: 45,
+					  width: 320
+					});
+
+
+			        //颜色的更新
+			        Vis.boundaryPath.transition()
+			        .attr("fill", function(d, i) {
+			        	if (Vis.differentProv.indexOf(d.properties.abb) < 0)
+			        		return "#ccc"
+					    return Vis.colorScale(_values[d.properties.abb][Vis.attrType[Vis.attr]]);
+						});
+
+			        //添加tooltip
+			        Vis.boundaryPath.selectAll("title")
+			        	.transition()
+			        	.text(function(d) {
+			        		if (Vis.differentProv.indexOf(d.properties.abb) >= 0)
+								return d.properties.abb + "：" + Vis.formatAsThousands(_values[d.properties.abb][Vis.attrType[Vis.attr]]);
+					   });
+			      	Vis.boundaryText.selectAll("title")	
+			      		.transition()
+			        	.text(function(d) {
+			        		if (Vis.differentProv.indexOf(d.properties.abb) >= 0)
+								return d.properties.abb + ":" + Vis.formatAsThousands(_values[d.properties.abb][Vis.attrType[Vis.attr]]);
+				   });
+				}
+				else{
+					Vis.legendMap.remove();
+					Vis.boundaryPath.transition()
+			        .attr("fill", function(d, i) {
+			        	if (Vis.differentProv.indexOf(d.properties.abb) < 0)
+			        		return "#ccc"
+					    return Vis.cluster.color(Vis.cluster.plotData[d.properties.abb][Vis.attrType[Vis.attr]]);
+						});
+			        Vis.cluster.legendName = new Array();
+			        Vis.cluster.dataToUse = Vis.cluster.filtering(Vis.eduType[Vis.stuType]);
+			        Vis.cluster.categories = Vis.unique(d3.map(Vis.cluster.dataToUse, d => d[Vis.attrType[Vis.attr]]));
+				    for (var i = 1; i <=  Vis.cluster.categories.length; i ++){
+				        	Vis.cluster.legendName.push("第"+i+ "类")
+				        }
+			        Vis.cluster.legendColor = 
+			        	d3.scaleOrdinal(d3.schemeSet3.slice(0,Vis.cluster.categories.length))
+			        	.domain(Vis.cluster.legendName);
+			        Vis.legendMap = legend({
+					  color:  Vis.cluster.legendColor,
+					  title: "地图颜色编码",
+					  translateX: Vis.width - 10,
+					  translateY: 45,
+					  width: 320
+					})
+				}
+
+		    }
+		    Vis.scatterTran = function(year, attr){
+				Vis.view4.finalData = new Array();
+		        for (var key in Vis.view4.data) {
+		        	for (var i = 0; i < Vis.eduType.length; i++){
+		        	Vis.view4.dataToUse = Vis.cluster.filtering(Vis.eduType[i]);
+		        	Vis.view4.dt = Vis.mapToObject(d3.group(Vis.view4.dataToUse, d => d.province));
+		        	Vis.view4.data[key][Vis.attrType[attr] + i] = Vis.view4.dt[key][0][Vis.attrType[attr]];
+		        }
+					Vis.view4.data[key]["province"] = key;
+					Vis.view4.finalData.push(Vis.view4.data[key]);
+				}
+
+				// View 4 Scale
+				Vis.view4.z = new Array();
+				for (var i = 0; i < Vis.eduType.length; i++){
+					Vis.view4.dataToUse = Vis.cluster.filtering(Vis.eduType[i]);
+					Vis.view4.categories = Vis.unique(d3.map(Vis.view4.dataToUse, d => d[Vis.attrType[attr]]));
+					Vis.view4.color = d3.scaleOrdinal(d3.schemeSet3.slice(0,Vis.view4.categories.length));
+			        Vis.view4.color
+			        	.domain(Array.from(new Array(Vis.view4.categories.length).keys()));
+					Vis.view4.z.push(Vis.view4.color);
+				}
+
+				Vis.view4.x = Vis.view4.columns.map(c => d3.scaleLinear()
+				    .domain(d3.extent(Vis.view4.finalData, d => attr <= 4?Math.log10(d[year][c][0][Vis.attrType[attr]] + 1):d[year][c][0][Vis.attrType[attr]]))
+				    .rangeRound([Vis.view4.padding / 2, Vis.view4.size - Vis.view4.padding / 2]))
+				Vis.view4.y = Vis.view4.columns.map(c => d3.scaleLinear()
+					    .domain(d3.extent(Vis.view4.finalData, d => attr <= 4?Math.log10(d[year][c][0][Vis.attrType[attr]] + 1):d[year][c][0][Vis.attrType[attr]]))
+				    .rangeRound([Vis.view4.size - Vis.view4.padding / 2, Vis.view4.padding / 2]))
+
+				Vis.view4.svg.select(".x-axis").remove();
+				Vis.view4.svg.select(".y-axis").remove();
+
+				Vis.view4.xAxis = g => g.selectAll("g").data(Vis.view4.x).join("g")
+				      .attr("transform", (d, i) => `translate(${i * Vis.view4.size},0)`)
+				      .each(function(d) { return d3.select(this).call(Vis.view4.xaxis.scale(d)); })
+				      .call(g => g.select(".domain").remove())
+				      .call(g => g.selectAll(".tick line").attr("stroke", "#ddd"))
+				      .call(g => g.selectAll(".tick text").attr("class", "view4-x"));
+
+				Vis.view4.yAxis = g => g.selectAll("g").data(Vis.view4.y).join("g")
+				      .attr("transform", (d, i) => `translate(0,${i * Vis.view4.size})`)
+				      .each(function(d) { return d3.select(this).call(Vis.view4.yaxis.scale(d)); })
+				      .call(g => g.select(".domain").remove())
+				      .call(g => g.selectAll(".tick line").attr("stroke", "#ddd"))
+				      .call(g => g.selectAll(".tick text").attr("class", "view4-y"));
+
+				Vis.view4.svg.append("g")
+				  .attr("class","x-axis")
+				  .call(Vis.view4.xAxis);
+
+				Vis.view4.svg.append("g")
+				  .attr("class","y-axis")
+				  .call(Vis.view4.yAxis);
+
+				// Component
+				Vis.view4.cell.each(function([i, j]) {
+					d3.select(this).selectAll("circle")
+					  .data(Vis.view4.finalData)
+					  .transition()
+					    .attr("cx", d => Vis.view4.x[i](attr <= 4?Math.log10(d[year][Vis.view4.columns[i]][0][Vis.attrType[attr]]+ 1):d[year][Vis.view4.columns[i]][0][Vis.attrType[attr]]))
+					    .attr("cy", d => Vis.view4.y[j](attr <= 4?Math.log10(d[year][Vis.view4.columns[j]][0][Vis.attrType[attr]]+ 1):d[year][Vis.view4.columns[j]][0][Vis.attrType[attr]]))
+					    .attr("r", 2.5)
+						.attr("fill-opacity", 1)
+						.attr("fill", d => Vis.view4.z[j](d[Vis.attrType[attr] + j]));
+				});
+			};
+
+			Vis.brush = function(){
+				if (Vis.selected.length > 0){
+					console.log("1",Vis.selected);
+					d3.select("#selected-provinces").select("text")
+			    .transition()
+			    .text("刷选省市：" + d3.map(Vis.selected, d => d.province).toString());
+					  Vis.view3
+					  .selectAll(".line")
+					  .filter(function(d,i){
+					  	return d3.map(Vis.selected, d => d.province).indexOf(d.province) < 0;
+
+					  })
+					  .transition().duration(200)
+					  .style("stroke", "lightgrey")
+					  .style("opacity", "0.2");
+					Vis.view3
+					  .selectAll(".line")
+					  .filter(function(d,i){
+					  	return d3.map(Vis.selected, d => d.province).indexOf(d.province) >= 0;
+
+					  })
+					  .transition().duration(200)
+					  .style("stroke", function(d){ return Vis.cluster.color(d[Vis.attrType[Vis.attr]]);} )
+					  .style("opacity", "1");
+
+					if (Vis.clus == 1){
+						Vis.boundaryPath
+							.transition().duration(200)
+							.attr("fill-opacity",
+								function(d, i) {
+									if ( d3.map(Vis.selected, d => d.province).indexOf(d.properties.abb) < 0){
+										return 0.1;
+									}
+									else
+										return 1;
+								})
+							.attr("stroke-width", function(d, i) {
+									if ( d3.map(Vis.selected, d => d.province).indexOf(d.properties.abb) >= 0){
+										return 2;
+									}
+									else
+										return 1;
+								});
+					}
+					else{
+						Vis.boundaryPath
+							.transition().duration(200)
+							.attr("stroke-width", function(d, i) {
+									if ( d3.map(Vis.selected, d => d.province).indexOf(d.properties.abb) >= 0){
+										return 2;
+									}
+									else
+										return 1;
+								});
+					}
+
+				}
+				else{
+					d3.select("#selected-provinces").select("text")
+					    .transition()
+					    .text();
+
+					Vis.view3
+					  .selectAll(".line")
+					  .transition().duration(200).delay(200)
+					  .style("stroke", function(d){ return Vis.cluster.color(d[Vis.attrType[Vis.attr]])} )
+					  .style("opacity", "1");
+
+					if (Vis.clus == 1){
+						Vis.boundaryPath
+							.transition()
+							.attr("fill-opacity", 1)
+							.attr("stroke-width", 1);
+						}
+						else{
+							Vis.boundaryPath
+							.transition()
+							.attr("stroke-width", 1);
+						}
+
+				}
+			}
+
+			Vis.clearBrush = function(){
+				d3.select("#selected-provinces").select("text")
+					    .transition()
+					    .text();
+
+					Vis.view3
+					  .selectAll(".line")
+					  .transition().duration(200).delay(200)
+					  .style("stroke", function(d){ return Vis.cluster.color(d[Vis.attrType[Vis.attr]])} )
+					  .style("opacity", "1");
+
+					if (Vis.clus == 1){
+						Vis.boundaryPath
+							.transition()
+							.attr("fill-opacity", 1)
+							.attr("stroke-width", 1);
+						}
+						else{
+							Vis.boundaryPath
+							.transition()
+							.attr("stroke-width", 1);
+						}
+			}
+
+			//Zooming
+			Vis.zooming = function(event, d) {
+				Vis.offset = [event.transform.x,
+				event.transform.y];
+				Vis.newScale = event.transform.k * 2000;
+
+				//Update projection with new offset
+				Vis.projection.translate(Vis.offset)
+					.scale(Vis.newScale);
+
+				//Update all paths and circles
+				Vis.svg.selectAll(".province.path")
+					.attr("d", Vis.path);
+
+				Vis.svg.selectAll(".province.text")
+					.attr("x",  function(d){
+						if (_provs2.indexOf(d.properties.abb) >= 0)
+							return Vis.path.centroid(d)[0] + _values2[d.properties.abb][0];
+						return Vis.path.centroid(d)[0];
+					})
+					.attr("y",  function(d){
+						if (_provs2.indexOf(d.properties.abb) >= 0)
+							return Vis.path.centroid(d)[1] + _values2[d.properties.abb][1];
+						return Vis.path.centroid(d)[1];
+					})
+			}
+			Vis.zoom = d3.zoom()
+				 .scaleExtent([ 0.1, 1.0 ])
+				 .translateExtent([[ -2000, -1000 ], [ 2000, 1000 ]])
+				.on("zoom", Vis.zooming);
+			Vis.center = Vis.projection([70, 50]);
+			Vis.map = Vis.svg.append("g")
+				.attr("id", "map")
+				.call(Vis.zoom)
+				.call(Vis.zoom.transform, d3.zoomIdentity
+				.translate(Vis.width/2, Vis.height/2)
+				.scale(0.25)
+				.translate(-Vis.center[0], -Vis.center[1]));
+			Vis.map.append("rect")
+				.attr("x", 0)
+				.attr("y", 0)
+				.attr("width", Vis.width)
+				.attr("height", Vis.height)
+				.attr("opacity", 0);
+						//Bind 'Reset' button behavior
+			d3.select("#reset")
+				.on("click", function() {
+
+					Vis.map.transition()
+						.call(Vis.zoom.transform, d3.zoomIdentity  //Same as the initial transform
+							.translate(Vis.width/2, Vis.height/2)
+							.scale(0.25)
+							.translate(-Vis.center[0], -Vis.center[1]));
+
+			});
+
+
+			//Scale in View 1
+			Vis.mapScale = d3.scaleLinear();
+			Vis.colorScale = d3.scaleSequential(d3.interpolateRdBu);
+
+			// View 2
+			Vis.height = 295;
+			Vis.viewS = d3.select(".view2")
+						.append("svg")
+						.attr("width", Vis.width)
+						.attr("height", Vis.height);
+
+			Vis.titleHeightViewS = 45;
+			Vis.colorViewS = [d3.interpolateRdYlGn(0),d3.interpolateRdYlGn(1)];
+			Vis.marginViewSx = 50;
+			Vis.marginViewSy = 30;
+			Vis.chartCountViewS = 3;
+			Vis.perChartHeightViewS = (Vis.height - Vis.marginViewSy)/3;
+			Vis.xScale = d3.scaleLinear();
+			Vis.yScale = d3.scaleLinear();
+			Vis.lineViewS = d3.line();
+			Vis.lineViewS2 = d3.line();
+			Vis.lineColorViewS = [d3.schemePaired[10],d3.schemePaired[11]]
+			Vis.attrViewS = ["all","sex_ratio","type_ratio"];
+			Vis.attrViewSName = ["毕业生总数","毕业生男女比例（男生/女生)","毕业生本专科比例(本科/专科)"]
+			Vis.xScaleList = [];
+			Vis.yScaleList = [];
+
+			Vis.view2Transition = function(province){
+				d3.select(".view2")
+					.select("text")
+					.transition()
+					.text(province + Vis.titleName[Vis.stuType] + "各项指标发展趋势图");
+				_viewSData = Vis.filtering3(Vis.eduType[Vis.stuType], province);
+		        _view2Data = Vis.filtering3(Vis.eduType[Vis.stuType], "总计");
+		        _allData = Vis.filtering2(Vis.eduType[Vis.stuType]);
+		        Vis.viewS.selectAll(".y.axis").remove();
+		        for (var j = 0; j < 3; j++){
+			    	Vis.yScaleList[j] = Vis.yScale.domain(d3.extent(_allData, d => d[Vis.attrViewS[j]])).nice()
+					    .range([(j+1) * Vis.perChartHeightViewS, j *Vis.perChartHeightViewS + Vis.titleHeightViewS]);
+
+					//更新y坐标轴
+					Vis.yAxis = d3.axisLeft()
+									.scale(Vis.yScaleList[j])
+									.ticks(5);
+
+					Vis.viewS.append("g")
+						.attr("class", "y axis")
+						.attr("transform", "translate(" + Vis.marginViewSx + ",0)")
+						.call(Vis.yAxis);
+
+					// 某个省市
+					Vis.lineViewS
+						.x(d => Vis.xScaleList[j](d.year))
+				    	.y(d => Vis.yScaleList[j](d[Vis.attrViewS[j]]));
+
+				    Vis.lineView = Vis.viewS.selectAll("path." + Vis.attrViewS[j])
+					      .data([_viewSData]);
+
+					Vis.lineView.enter()
+					      .append("path")
+					      .attr("class",Vis.attrViewS[j])
+					      .merge(Vis.lineView)
+					      .transition()
+					      .duration(500)
+					      .attr("d", Vis.lineViewS)
+					      .attr("fill", "none")
+					      .attr("stroke", Vis.lineColorViewS[0])
+					      .attr("stroke-width", 4);
+
+					// 全国average
+					Vis.lineViewS2
+						.x(d => Vis.xScaleList[j](d.year))
+				    	.y(d => j == 0? Vis.yScaleList[j](d[Vis.attrViewS[j] + "_avg"]): Vis.yScaleList[j](d[Vis.attrViewS[j]]));
+
+					Vis.lineViewAvg = Vis.viewS.selectAll("path." + Vis.attrViewS[j] + "avg")
+					      .data(j == 0?[_viewSData]:[_view2Data]);
+
+					Vis.lineViewAvg.enter()
+					      .append("path")
+					      .attr("class",Vis.attrViewS[j] + "avg")
+					      .merge(Vis.lineViewAvg)
+					      .transition()
+					      .duration(500)
+					      .attr("d", Vis.lineViewS2)
+					      .attr("fill", "none")
+					      .attr("stroke", Vis.lineColorViewS[1])
+					      .attr("stroke-width", 4);
+
+					Vis.viewS.selectAll("circle." + Vis.attrViewS[j])
+						.data(_viewSData)
+						.transition()
+						.duration(500)
+					    .attr("cx", function(d) {
+					   		return Vis.xScaleList[j](d.year);
+					   })
+					    .attr("cy", function(d) {
+					   		return Vis.yScaleList[j](d[Vis.attrViewS[j]]);
+					   })
+					    .attr("r", 5)
+					    .attr("fill", d => d[Vis.attrViewS[j] + "_index"] == 1?Vis.colorViewS[0]:Vis.colorViewS[1])
+					   	.style("opacity", 0.75)
+						   .select("title")
+						   .text(function(d) {
+								return d[Vis.attrViewS[j]].toFixed(2);
+						   });
+		        }
+			}
+			Vis.view2 = {};
+			// View 2 description
+		    Vis.view2.description = d3.select("#view2-description")
+						.append("svg")
+						.attr("class", "description")
+						.attr("width", Vis.width)
+						.attr("height", 30);
+			Vis.view2.desc = Vis.view2.description.append("g")
+	            	.attr("class", "")
+	            	.attr("transform", "translate(" + Vis.marginViewSx + ",0)");
+			Vis.view2.desc.append("rect")
+	           		.attr("transform", "translate(0, 0)")
+	           		.attr("width", 60)
+	           		.attr("height", 10)
+	           		.attr("fill",  Vis.lineColorViewS[0]);
+	        Vis.view2.desc.append("text")
+	        		.attr("class", "smallText")
+	           		.attr("transform", "translate(70, 10)")
+	           		.text("某省市的变化曲线");
+	        Vis.view2.desc.append("rect")
+	           		.attr("transform", "translate(320, 0)")
+	           		.attr("width", 60)
+	           		.attr("height", 10)
+	           		.attr("fill",  Vis.lineColorViewS[1]);
+	        Vis.view2.desc.append("text")
+	        		.attr("class", "smallText")
+	           		.attr("transform", "translate(390, 10)")
+	           		.text("全国平均的变化曲线");
+	        Vis.view2.desc.append("circle")
+	           		.attr("transform", "translate(35, 20)")
+	           		.attr("r", 7)
+	           		.attr("fill",  Vis.colorViewS[0]);
+	        Vis.view2.desc.append("text")
+	        		.attr("class", "smallText")
+	           		.attr("transform", "translate(70, 25)")
+	           		.text("高于全国均值");
+	        Vis.view2.desc.append("circle")
+	           		.attr("transform", "translate(355, 20)")
+	           		.attr("r", 7)
+	           		.attr("fill",  Vis.colorViewS[1]);
+	        Vis.view2.desc.append("text")
+	        		.attr("class", "smallText")
+	           		.attr("transform", "translate(390, 25)")
+	           		.text("低于全国均值");
+
+			//View 3
+			Vis.cluster.margin = {top: 20, right: 30, bottom: 0, left: 50},
+			Vis.cluster.width = 600 - Vis.cluster.margin.left - Vis.cluster.margin.right,
+			Vis.cluster.height = 300 - Vis.cluster.margin.top - Vis.cluster.margin.bottom;
+			// View 3 color scale
+			Vis.cluster.color = d3.scaleOrdinal(d3.schemeSet3);
+
+			// append the svg object to the body of the page
+			Vis.view3 = d3.select("#cluster")
+				.append("svg")
+					.attr("width", Vis.cluster.width + Vis.cluster.margin.left + Vis.cluster.margin.right)
+			    	.attr("height", Vis.cluster.height + Vis.cluster.margin.top + Vis.cluster.margin.bottom)
+					.append("g")
+			    		.attr("transform","translate(" +  Vis.cluster.margin.left + "," + Vis.cluster.margin.top + ")");
+			//View 4
+			Vis.view4 = {}
+			Vis.view4.width = 450;
+			Vis.view4.padding = 10;
+			Vis.view4.margin = 10;
+
+
+			Promise.all([
+			    d3.json("ChinaGeoFull.json"),
+			    d3.csv("population.csv", d3.autoType),
+			    d3.csv("variation.csv", d3.autoType),
+			    d3.csv("education.csv", d3.autoType),
+			    d3.csv("cluster.csv", d3.autoType)
+			]).then(function(files)
+			{
+				// View 1
+				// 读入数据集
+				Vis.selected = [];
+				Vis.province = files[0];
+				Vis.pop = files[1];
+				Vis.variation = files[2];
+				Vis.education = files[3];
+				Vis.clusteringData = files[4];
+				Vis.year = Vis.unique(d3.map(Vis.education, d => d.year));
+				Vis.eduType = Vis.unique(d3.map(Vis.education, d => d.type));
+				Vis.eduTypeName = ['高等学校(机构)毕业研究生','高等教育普通毕业生','高等教育成人毕业生','高等教育网络毕业生']
+				Vis.differentProv = Vis.unique(d3.map(Vis.education, d => d.province)).slice(1);
+
+				// 数据的定义与比例尺的更新
+				_tmpData = Vis.filtering(2019, Vis.eduType[0]);
+				_allData = Vis.filtering2(Vis.eduType[Vis.stuType]);
+		        _values = [];
+		        for(var i = 0; i < _tmpData.length; i++) {
+		            _values[_tmpData[i].province] = _tmpData[i];
+		        }
+
+		        _provs2 = d3.map(Vis.variation, d => d.province);
+		        _values2 = [];
+		        for(var i = 0; i < Vis.variation.length; i++) {
+		        	_values2[Vis.variation[i].province] = [Vis.variation[i].x,Vis.variation[i].y];
+		        }
+		        // Color scale
+		        _maxvalue = d3.max(_allData, function(d) {
+		            return d.all;
+		        });
+		        _minvalue = d3.min(_allData, function(d) {
+		            return d.all;
+		        });
+		        Vis.mapScale.domain([_minvalue, _maxvalue]);
+		        Vis.colorScale.domain(Vis.mapScale.domain().reverse());
+
+
+				Vis.legendMap = legend({
+					  color: Vis.colorScale,
+					  title: "地图颜色编码",
+					  translateX: Vis.width - 10,
+					  translateY: 45,
+					  width: 320
+					})
+
+				Vis.boundaryPath = Vis.map.selectAll("g.province path")
+					.data(Vis.province.features)
+					.enter()
+					.append("g")
+					.append("path")
+					.attr("class", "province path")
+					.attr("stroke", "#000")
+					.attr("stroke-width", 1)
+					.attr("fill", "#ccc")
+					.attr("d", Vis.path)
+					.on("click", function(event, d){
+		        		if (Vis.differentProv.indexOf(d.properties.abb) >= 0)
+		        			Vis.view2Transition(d.properties.abb);
+					});;
+
+				// 文本	
+				Vis.boundaryText = Vis.map.selectAll("g.province")
+					.data(Vis.province.features)
+					.enter()
+					.append("g")
+					.append("text")
+					.attr("class", "province text")
+					.text(function(d, i) {
+					    return d.properties.abb
+					})
+					.attr("x",  function(d){
+						if (_provs2.indexOf(d.properties.abb) >= 0)
+							return Vis.path.centroid(d)[0] + _values2[d.properties.abb][0];
+						return Vis.path.centroid(d)[0];
+					})
+					.attr("y",  function(d){
+						if (_provs2.indexOf(d.properties.abb) >= 0)
+							return Vis.path.centroid(d)[1] + _values2[d.properties.abb][1];
+						return Vis.path.centroid(d)[1];
+					})
+					.attr("fill", "black")
+					.style("font-size", "10px")
+					.on("click", function(event, d){
+		        		if (Vis.differentProv.indexOf(d.properties.abb) >= 0)
+		        			Vis.view2Transition(d.properties.abb);
+					});
+
+		        //颜色的更新
+		        Vis.boundaryPath.attr("fill", function(d, i) {
+		        	if (Vis.differentProv.indexOf(d.properties.abb) < 0)
+		        		return "#ccc"
+				    return Vis.colorScale(_values[d.properties.abb]["all"]);
+					})
+
+		        //添加tooltip
+		        Vis.boundaryPath.append("title")	
+		        	.text(function(d) {
+		        		if (Vis.differentProv.indexOf(d.properties.abb) >= 0)
+							return d.properties.abb + ":" + Vis.formatAsThousands(_values[d.properties.abb]["all"]);
+				   });
+		      	Vis.boundaryText.append("title")	
+		        	.text(function(d) {
+		        		if (Vis.differentProv.indexOf(d.properties.abb) >= 0)
+							return d.properties.abb + ":" + Vis.formatAsThousands(_values[d.properties.abb]["all"]);
+				   });
+
+		        // View 2
+		        _viewSData = Vis.filtering3(Vis.eduType[Vis.stuType], "北京");
+		        _view2Data = Vis.filtering3(Vis.eduType[Vis.stuType], "总计");
+		        for (var j = 0; j < 3; j++){
+		        	Vis.titleViewS = Vis.viewS.append("g")
+		        		.attr("class", "viewS title" + Vis.attrViewS[j])
+		        		.attr("transform","translate(" + (Vis.width/2 - Vis.marginViewSx) + "," + (j * Vis.perChartHeightViewS + 35) + ")")
+		        		.append("text")
+		        		.text((j == 2) && (Vis.stuType == 0) ? "硕博比例(博士/硕士)":Vis.attrViewSName[j])
+		        	Vis.xScaleList[j] = Vis.xScale.domain([2012, 2020])
+			    		.range([Vis.marginViewSx, Vis.width - Vis.marginViewSx]);
+
+			    	Vis.yScaleList[j] = Vis.yScale.domain(d3.extent(_allData, d => d[Vis.attrViewS[j]])).nice()
+					    .range([(j+1) * Vis.perChartHeightViewS, j *Vis.perChartHeightViewS + Vis.titleHeightViewS]);
+
+					Vis.xAxis = d3.axisBottom()
+									.scale(Vis.xScaleList[j])
+									.ticks(7)
+									.tickFormat(Vis.formatInt);
+
+					//Define Y axis
+					Vis.yAxis = d3.axisLeft()
+									.scale(Vis.yScaleList[j])
+									.ticks(5);
+
+					Vis.viewS.append("g")
+						.attr("class", "x axis")
+						.attr("transform","translate(0," + ((j+1) * Vis.perChartHeightViewS) + ")")
+						.call(Vis.xAxis);
+
+					Vis.viewS.append("g")
+						.attr("class", "y axis")
+						.attr("transform", "translate(" + Vis.marginViewSx + ",0)")
+						.call(Vis.yAxis);
+
+					// 某个省市
+					Vis.lineViewS
+						.x(d => Vis.xScaleList[j](d.year))
+				    	.y(d => Vis.yScaleList[j](d[Vis.attrViewS[j]]));
+
+				    Vis.lineView = Vis.viewS.selectAll("path." + Vis.attrViewS[j])
+					      .data([_viewSData]);
+
+					Vis.lineView.enter()
+					      .append("path")
+					      .attr("class",Vis.attrViewS[j])
+					      .attr("d", Vis.lineViewS)
+					      .attr("fill", "none")
+					      .attr("stroke", Vis.lineColorViewS[0])
+					      .attr("stroke-width", 4);
+
+					// 全国average
+					Vis.lineViewS2
+						.x(d => Vis.xScaleList[j](d.year))
+				    	.y(d => j == 0? Vis.yScaleList[j](d[Vis.attrViewS[j] + "_avg"]): Vis.yScaleList[j](d[Vis.attrViewS[j]]));
+
+					Vis.lineViewAvg = Vis.viewS.selectAll("path." + Vis.attrViewS[j] + "avg")
+					      .data(j == 0?[_viewSData]:[_view2Data]);
+					Vis.lineViewAvg.enter()
+					      .append("path")
+					      .attr("class",Vis.attrViewS[j] + "avg")
+					      .attr("d", Vis.lineViewS2)
+					      .attr("fill", "none")
+					      .attr("stroke", Vis.lineColorViewS[1])
+					      .attr("stroke-width", 4);
+
+					Vis.viewS.selectAll("circle." + Vis.attrViewS[j])
+					   .data(_viewSData)
+					   .enter()
+					   .append("circle")
+					   .attr("class", Vis.attrViewS[j])
+					   .attr("cx", function(d) {
+					   		return Vis.xScaleList[j](d.year);
+					   })
+					   .attr("cy", function(d) {
+					   		return Vis.yScaleList[j](d[Vis.attrViewS[j]]);
+					   })
+					   .attr("r", 5)
+					   .attr("fill", d => d[Vis.attrViewS[j] + "_index"] == 1?Vis.colorViewS[0]:Vis.colorViewS[1])
+					   	.style("opacity", 0.75)
+						   .append("title")
+						   .text(function(d) {
+								return d[Vis.attrViewS[j]].toFixed(2);
+						   });
+		        }
+
+		        // View 3
+		        Vis.cluster.dimensions = ["2013","2014","2015","2016","2017","2018","2019"]
+		        Vis.cluster.dataToUse = Vis.cluster.filtering(Vis.eduType[Vis.stuType]);
+		        Vis.cluster.data = Vis.mapToObject(d3.group(Vis.cluster.dataToUse, d => d.province));
+
+		        Vis.cluster.summaryData = Vis.filtering2(Vis.eduType[Vis.stuType]);
+		        //svg join的Data
+		        Vis.cluster.plotData = Vis.mapToObject(d3.group(Vis.cluster.summaryData, d => d.province, d=>d.year));
+		        Vis.cluster.finalData = new Array();
+		        for (var key in Vis.cluster.plotData) {
+				　　var cluster = Vis.cluster.data[key][0][Vis.attrType[Vis.attr]];
+				　　Vis.cluster.plotData[key][Vis.attrType[Vis.attr]] = cluster;
+				  Vis.cluster.plotData[key]["province"] = key;
+				  Vis.cluster.finalData.push(Vis.cluster.plotData[key]);
+				}
+		        Vis.cluster.categories = Vis.unique(d3.map(Vis.cluster.dataToUse, d => d[Vis.attrType[Vis.attr]]));
+		        Vis.cluster.color
+		        	.domain(Array.from(new Array(Vis.cluster.categories.length).keys()));
+
+
+		       // BUild Scales
+				Vis.cluster.y = {}
+				for (var i in Vis.cluster.dimensions) {
+					_name = Vis.cluster.dimensions[i]
+					Vis.cluster.y[_name] = d3.scaleLinear()
+						.domain([d3.min(Vis.cluster.summaryData, d => d[Vis.attrType[Vis.attr]]),
+						d3.max(Vis.cluster.summaryData, d => d[Vis.attrType[Vis.attr]])])
+				  		.range([Vis.cluster.height, 0])
+				}
+				Vis.cluster.x = d3.scalePoint()
+					.range([0, Vis.cluster.width])
+					.domain(Vis.cluster.dimensions);
+
+
+				Vis.cluster.highlight = function(event, d){
+					Vis.cluster.selected_features = d[Vis.attrType[Vis.attr]];
+
+					Vis.view3
+					  .selectAll(".line")
+					  .transition().duration(200)
+					  .style("stroke", "lightgrey")
+					  .style("opacity", "0.2");
+
+					Vis.view3
+					  .selectAll("." + "classes" + Vis.cluster.selected_features)
+					  .transition().duration(200)
+					  .style("stroke", Vis.cluster.color( Vis.cluster.selected_features))
+					  .style("opacity", "1");
+
+					Vis.cluster.provs = Vis.cluster.finalData.filter(d => d[Vis.attrType[Vis.attr]] != Vis.cluster.selected_features).map(d => d.province);
+					if (Vis.clus == 1){
+						Vis.boundaryPath
+							.transition()
+							.attr("fill-opacity",
+								function(d, i) {
+									if ( Vis.cluster.provs.indexOf(d.properties.abb) >= 0){
+										return 0.1;
+									}
+								})
+							.attr("stroke-width", function(d, i) {
+									if ( Vis.cluster.provs.indexOf(d.properties.abb) < 0){
+										return 1;
+									}
+								});
+					}
+
+				}
+
+				Vis.cluster.doNotHighlight = function(event, d){
+					Vis.view3
+					  .selectAll(".line")
+					  .transition().duration(200).delay(500)
+					  .style("stroke", function(d){ return Vis.cluster.color(d[Vis.attrType[Vis.attr]])} )
+					  .style("opacity", "1");
+
+					if (Vis.clus == 1){
+						Vis.boundaryPath
+							.transition()
+							.attr("fill-opacity", 1)
+							.attr("stroke-width", 1);
+						}
+				}
+
+				Vis.cluster.path = function(d) {
+				  return d3.line()(Vis.cluster.dimensions.map(function(p) { return [Vis.cluster.x(p), Vis.cluster.y[p](d[p][0][Vis.attrType[Vis.attr]])]; }));
+				}
+
+				Vis.view3
+					.selectAll("myPath")
+					.data(Vis.cluster.finalData)
+					.enter()
+					.append("path")
+					  .attr("class", function (d) { return "line " + "classes" + d[Vis.attrType[Vis.attr]]; } ) 
+					  .attr("d",  Vis.cluster.path)
+					  .style("fill", "none" )
+					  .style("stroke", function(d){ return Vis.cluster.color(d[Vis.attrType[Vis.attr]]);} )
+					  .attr("stroke-width", 3)
+					  .style("opacity", 1)
+					  .on("mouseover", Vis.cluster.highlight)
+					  .on("mouseleave", Vis.cluster.doNotHighlight );
+								// Draw the axis:
+				Vis.view3
+					.selectAll("myAxis")
+					// For each dimension of the dataset I add a 'g' element:
+					.data(Vis.cluster.dimensions).enter()
+					.append("g")
+					.attr("class", "axis")
+					// I translate this element to its right position on the x axis
+					.attr("transform", function(d) { return "translate(" + Vis.cluster.x(d) + ", 0)"; })
+					// And I build the axis with the call function
+					.each(function(d) { d3.select(this).call(d3.axisLeft().ticks(5).scale(Vis.cluster.y[d])); })
+					// Add axis title
+					.append("text")
+					  .style("text-anchor", "middle")
+					  .attr("y", -9)
+					  .text(d => d)
+					  .style("fill", "black");
+				Vis.clusterTran(0);
+
+				//View 4
+				Vis.view4.data = Vis.mapToObject(d3.group(Vis.education, d => d.province, d=>d.year,d => d.type));
+				delete Vis.view4.data.总计;
+				Vis.view4.finalData = new Array();
+		        for (var key in Vis.view4.data) {
+		        	for (var i = 0; i < Vis.eduType.length; i++){
+		        	Vis.view4.dataToUse = Vis.cluster.filtering(Vis.eduType[i]);
+		        	Vis.view4.dt = Vis.mapToObject(d3.group(Vis.view4.dataToUse, d => d.province));
+		        	Vis.view4.data[key]["all" + i] = Vis.view4.dt[key][0]["all"];
+		        }
+					Vis.view4.data[key]["province"] = key;
+					Vis.view4.finalData.push(Vis.view4.data[key]);
+				}
+				Vis.view4.columns = Vis.eduType;
+				Vis.view4.size = (Vis.view4.width - (Vis.eduType.length + 1) * Vis.view4.padding) / Vis.eduType.length + Vis.view4.padding;
+				Vis.view4.svg = d3.select("#view4-matrix")
+				  .append("svg")
+				  .attr("width",Vis.view4.width)
+				  .attr("height",Vis.view4.width)
+				  .attr("viewBox", [-Vis.view4.padding - Vis.view4.margin, 0, Vis.view4.width + Vis.view4.margin, Vis.view4.width]);
+
+				Vis.view4.svg.append("style")
+				  .text(`circle.hidden { fill: #000; fill-opacity: 1; r: 1px; }`);
+				// View 4 Scale
+				Vis.view4.z = new Array();
+				for (var i = 0; i < Vis.eduType.length; i++){
+					Vis.view4.dataToUse = Vis.cluster.filtering(Vis.eduType[i]);
+					Vis.view4.categories = Vis.unique(d3.map(Vis.view4.dataToUse, d => d['all']));
+					Vis.view4.color = d3.scaleOrdinal(d3.schemeSet3.slice(0,Vis.view4.categories.length));
+			        Vis.view4.color
+			        	.domain(Array.from(new Array(Vis.view4.categories.length).keys()));
+					Vis.view4.z.push(Vis.view4.color);
+				}
+
+
+				Vis.view4.x = Vis.view4.columns.map(c => d3.scaleLinear()
+				    .domain(d3.extent(Vis.education.filter(d => d.type == c).map(d => Math.log10(d.all + 1))))
+				    .rangeRound([Vis.view4.padding / 2, Vis.view4.size - Vis.view4.padding / 2]))
+				Vis.view4.y = Vis.view4.columns.map(c => d3.scaleLinear()
+				    .domain(d3.extent(Vis.education.filter(d => d.type == c).map(d => Math.log10(d.all + 1))))
+				    .rangeRound([Vis.view4.size - Vis.view4.padding / 2, Vis.view4.padding / 2]))
+
+				 
+				Vis.view4.xaxis = d3.axisBottom()
+				      .ticks(4)
+				      .tickSize(Vis.view4.size * Vis.view4.columns.length);
+
+				Vis.view4.xAxis = g => g.selectAll("g").data(Vis.view4.x).join("g")
+				      .attr("transform", (d, i) => `translate(${i * Vis.view4.size},0)`)
+				      .each(function(d) { return d3.select(this).call(Vis.view4.xaxis.scale(d)); })
+				      .call(g => g.select(".domain").remove())
+				      .call(g => g.selectAll(".tick line").attr("stroke", "#ddd"))
+				      .call(g => g.selectAll(".tick text").attr("class", "view4-x"));
+				Vis.view4.yaxis = d3.axisLeft()
+				      .ticks(4)
+				      .tickSize(-Vis.view4.size * Vis.view4.columns.length);
+
+				Vis.view4.yAxis = g => g.selectAll("g").data(Vis.view4.y).join("g")
+				      .attr("transform", (d, i) => `translate(0,${i * Vis.view4.size})`)
+				      .each(function(d) { return d3.select(this).call(Vis.view4.yaxis.scale(d)); })
+				      .call(g => g.select(".domain").remove())
+				      .call(g => g.selectAll(".tick line").attr("stroke", "#ddd"))
+				      .call(g => g.selectAll(".tick text").attr("class", "view4-y"));
+
+				Vis.view4.svg.append("g")
+				  .attr("class","x-axis")
+				  .call(Vis.view4.xAxis);
+
+				Vis.view4.svg.append("g")
+				  .attr("class","y-axis")
+				  .call(Vis.view4.yAxis);
+
+				// Component
+				Vis.view4.cell = Vis.view4.svg.append("g")
+					.selectAll("g")
+					.data(d3.cross(d3.range(Vis.eduType.length), d3.range(Vis.eduType.length)))
+					.join("g")
+					  .attr("transform", ([i, j]) => `translate(${i * Vis.view4.size},${j * Vis.view4.size})`);
+
+				Vis.view4.cell.append("rect")
+				  .attr("fill", "none")
+				  .attr("stroke", "#aaa")
+				  .attr("x", Vis.view4.padding / 2 + 0.5)
+				  .attr("y", Vis.view4.padding / 2 + 0.5)
+				  .attr("width", Vis.view4.size - Vis.view4.padding)
+				  .attr("height", Vis.view4.size - Vis.view4.padding);
+
+				Vis.view4.cell.each(function([i, j]) {
+					d3.select(this).selectAll("circle")
+					  .data(Vis.view4.finalData)
+					  .join("circle")
+					    .attr("cx", d => Vis.view4.x[i](Math.log10(d['2019'][Vis.view4.columns[i]][0]['all']+ 1)))
+					    .attr("cy", d => Vis.view4.y[j](Math.log10(d['2019'][Vis.view4.columns[j]][0]['all']+ 1)))
+					    .attr("r", 2.5)
+						.attr("fill-opacity", 1)
+						.attr("fill", d => Vis.view4.z[j](d['all' + j]));
+				});
+
+				Vis.view4.circle = Vis.view4.cell.selectAll("circle")
+
+				 
+				Vis.view4.cell.call(brush, Vis.view4.circle, Vis.view4.svg);
+
+				Vis.view4.svg.append("g")
+				  .style("font", "bold 10px sans-serif")
+				  .style("pointer-events", "none")
+				.selectAll("text")
+				.data(Vis.titleName)
+				.join("text")
+				  .attr("transform", (d, i) => `translate(${i * Vis.view4.size},${i * Vis.view4.size})`)
+				  .attr("x", Vis.view4.padding)
+				  .attr("y", Vis.view4.padding)
+				  .attr("dy", ".71em")
+				  .text(d => d);
+
+			function brush(cell, circle, svg) {
+			  const brush = d3.brush()
+			      .extent([[Vis.view4.padding / 2, Vis.view4.padding / 2], [Vis.view4.size - Vis.view4.padding / 2, Vis.view4.size - Vis.view4.padding / 2]])
+			      .on("start", brushstarted)
+			      .on("brush", brushed)
+			      .on("end", brushended);
+
+			  Vis.view4.cell.call(brush);
+
+
+			  let brushCell;
+
+			  // Clear the previously-active brush, if any.
+			  function brushstarted() {
+			    if (brushCell !== this) {
+			      d3.select(brushCell).call(brush.move, null);
+			      brushCell = this;
+			    }
+			  }
+
+			  // Highlight the selected circles.
+			  function brushed({selection}, [i, j]) {
+			    let selected = [];
+			    if (selection) {
+			      const [[x0, y0], [x1, y1]] = selection;
+			      Vis.view4.circle.classed("hidden",
+			        d => x0 >= Vis.view4.x[i](Vis.attr <=4?Math.log10(d[Vis.Singleyear][Vis.view4.columns[i]][0][Vis.attrType[Vis.attr]]+ 1):d[Vis.Singleyear][Vis.view4.columns[i]][0][Vis.attrType[Vis.attr]])
+			          || x1 <= Vis.view4.x[i](Vis.attr <=4?Math.log10(d[Vis.Singleyear][Vis.view4.columns[i]][0][Vis.attrType[Vis.attr]]+ 1):d[Vis.Singleyear][Vis.view4.columns[i]][0][Vis.attrType[Vis.attr]])
+			          || y0 >= Vis.view4.y[j](Vis.attr <=4?Math.log10(d[Vis.Singleyear][Vis.view4.columns[j]][0][Vis.attrType[Vis.attr]]+ 1):d[Vis.Singleyear][Vis.view4.columns[j]][0][Vis.attrType[Vis.attr]])
+			          || y1 <= Vis.view4.y[j](Vis.attr <=4?Math.log10(d[Vis.Singleyear][Vis.view4.columns[j]][0][Vis.attrType[Vis.attr]]+ 1):d[Vis.Singleyear][Vis.view4.columns[j]][0][Vis.attrType[Vis.attr]]));
+			      selected = Vis.view4.finalData.filter(
+			        d => x0 <= Vis.view4.x[i](Vis.attr <=4?Math.log10(d[Vis.Singleyear][Vis.view4.columns[i]][0][Vis.attrType[Vis.attr]]+ 1):d[Vis.Singleyear][Vis.view4.columns[i]][0][Vis.attrType[Vis.attr]])
+			          && x1 >= Vis.view4.x[i](Vis.attr <=4?Math.log10(d[Vis.Singleyear][Vis.view4.columns[i]][0][Vis.attrType[Vis.attr]]+ 1):d[Vis.Singleyear][Vis.view4.columns[i]][0][Vis.attrType[Vis.attr]])
+			          && y0 <= Vis.view4.y[j](Vis.attr <=4?Math.log10(d[Vis.Singleyear][Vis.view4.columns[j]][0][Vis.attrType[Vis.attr]]+ 1):d[Vis.Singleyear][Vis.view4.columns[j]][0][Vis.attrType[Vis.attr]])
+			          && y1 >= Vis.view4.y[j](Vis.attr <=4?Math.log10(d[Vis.Singleyear][Vis.view4.columns[j]][0][Vis.attrType[Vis.attr]]+ 1):d[Vis.Singleyear][Vis.view4.columns[j]][0][Vis.attrType[Vis.attr]]));
+			      	Vis.selected = selected;
+			    }
+			    else{
+			    	Vis.selected = []
+			    }
+			    Vis.brush();
+			}
+
+			  // If the brush is empty, select all circles.
+			  function brushended({selection}) {
+			    if (selection) {
+			    	Vis.brush();
+			    	return;
+			    }
+			    Vis.view4.circle.classed("hidden", false);
+			    Vis.selected = []
+			    Vis.brush();
+			  }
+			}
+
+			});
+		</script>
+	</body>
+</html>

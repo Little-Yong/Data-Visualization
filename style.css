@@ -1,0 +1,87 @@
+.subTitle {
+    text-anchor: middle;
+    color: #4F4F4F;
+    font-weight: 100;
+    display:inline-block;
+}
+.vert {
+	text-align: center;
+	width: 550px;
+}
+.view2 {
+  text-align: center;
+  width: 550px;
+}
+
+
+.slidecontainer {
+  width: 100%; /* Width of the outside container */
+}
+
+/* Mouse-over effects */
+.slider:hover {
+  opacity: 1; /* Fully shown on mouse-over */
+}
+
+#myMap{
+max-width: 650px;
+max-height: 300px;
+display:inline-block;
+}
+
+#detail{
+max-width: 650px;
+max-height: 300px;
+display:inline-block;
+}
+
+.axis path,
+
+.axis line {
+stroke: #4F4F4F;
+shape-rendering: crispEdges;
+}
+
+.axis text {
+font-family: Optima, Futura, sans-serif;
+font-size: 10px;
+fill: #4F4F4F;
+}
+
+.view4-x{
+font-family: Optima, Futura, sans-serif;
+font-size: 8px;
+fill: #4F4F4F;
+}
+
+.view4-y{
+font-family: Optima, Futura, sans-serif;
+font-size: 8px;
+fill: #4F4F4F;
+}
+
+.smallText{
+  font-size: 12px;
+}
+
+.viewS text {
+font-family: Optima, Futura, sans-serif;
+font-weight:bold;
+font-size: 16px;
+fill: #6a3d9a;
+}
+.cluster-form-group{
+  text-align: center;
+}
+
+.clusterTitle{
+  text-align: center;
+}
+
+#mainTitle{
+    text-anchor: middle;
+    color: #4F4F4F;
+    font-weight: 200;
+    text-align: center;
+}
+
